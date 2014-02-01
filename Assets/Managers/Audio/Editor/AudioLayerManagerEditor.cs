@@ -6,9 +6,8 @@ using System.Collections.Generic;
 [CustomEditor(typeof(AudioLayerManager))]
 public class AudioLayerManagerEditor : EditorPlus
 {
-    //private GUIContent label = new GUIContent("AudioLayersEnum", "The layer names are hardcoded in the AudioLayerManager");
+    private string description = "The layers are based on the hardcoded AudioLayersEnum.\n The enum can be found in the AudioLayerManager.cs file. This might change in the future.";
     private string settingsNameTooltip = "The layer names are hardcoded in the AudioLayerManager";
-    //private static List<bool> folds = new List<bool>(0);
 
     public override void OnInspectorGUI()
     {
@@ -16,29 +15,26 @@ public class AudioLayerManagerEditor : EditorPlus
         
         AudioLayerManager manager = target as AudioLayerManager;
         SerializedObject soManager = new SerializedObject(manager);
-       // SerializedProperty spSettings = soManager.FindProperty("AudioLayerSettings");
         
         int count = manager.AudioLayerSettings.Count;
 
-        //while (folds.Count < count)
-        //    folds.Add(false);
-
-        //EditorGUILayout.LabelField(label);
+        if(SavedFoldout("Description", -1))
+            EditorGUILayout.TextArea(description);
         for (int i = 0; i < count; i++)
         {
             AudioLayerSettings settings = manager.AudioLayerSettings[i]; 
-            GUIContent name = new GUIContent(settings.Layer.ToString(), settingsNameTooltip);
+            GUIContent name = new GUIContent("AudioLayer: " + settings.Layer.ToString(), settingsNameTooltip);
 
-            bool cont = true;
-            SerializedProperty sp = soManager.GetIterator();
-            while (cont)
-            {
-                //Debug.Log(i +  " + " + sp.name + " - " + sp.type + " - depth: " + sp.depth + " - " + sp.hasChildren);// +sp.arraySize + " - " + sp.
-                //SerializedProperty sp2 = sp.GetArrayElementAtIndex(i);
-                if (!sp.name.StartsWith("m_"))
-                    Debug.Log(i + " + " + sp.name + " - " + sp.type + " - depth: " + sp.depth + " - " + sp.hasChildren);
-                cont = sp.Next(true);
-            }
+            //bool cont = true;
+            //SerializedProperty sp = soManager.GetIterator();
+            //while (cont)
+            //{
+            //    //Debug.Log(i +  " + " + sp.name + " - " + sp.type + " - depth: " + sp.depth + " - " + sp.hasChildren);// +sp.arraySize + " - " + sp.
+            //    //SerializedProperty sp2 = sp.GetArrayElementAtIndex(i);
+            //    if (!sp.name.StartsWith("m_"))
+            //        Debug.Log(i + " + " + sp.name + " - " + sp.type + " - depth: " + sp.depth + " - " + sp.hasChildren);
+            //    cont = sp.Next(true);
+            //}
 
             if (SavedFoldout(name, i))
             {

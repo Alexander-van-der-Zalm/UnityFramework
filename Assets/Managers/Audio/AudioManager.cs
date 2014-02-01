@@ -3,14 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-
+// Singleton AudioManager
 [RequireComponent(typeof(AudioLayerManager))]
-public class AudioManager :  MonoBehaviour
+public class AudioManager : Singleton<AudioManager>
 {
     #region fields
-
-    // Singleton AudioManager
-    public static AudioManager Main {get; private set;}
 
     // AudioSources    
     // Find by lambda:
@@ -27,7 +24,6 @@ public class AudioManager :  MonoBehaviour
 
     public void Awake()
     {
-        Main = this;
         AudioSources = new List<AudioSourceContainer>();
     }
 
@@ -40,11 +36,11 @@ public class AudioManager :  MonoBehaviour
     /// <summary>
     /// Stop all sound
     /// </summary>
-    public static void Stop() { Stop(Main.AudioSources); }
-    public static void Stop(int AudioSourceID) { Stop(Main.FindSource(AudioSourceID)); }
-    public static void Stop(AudioLayer layer) { Stop(Main.FindSources(layer)); }
-    //public static void Stop(AudioSample sample) { Stop(Main.FindSources(sample)); }
-    public static void Stop(AudioClip clip) { Stop(Main.FindSources(clip)); }
+    public static void Stop() { Stop(Instance.AudioSources); }
+    public static void Stop(int AudioSourceID) { Stop(Instance.FindSource(AudioSourceID)); }
+    public static void Stop(AudioLayer layer) { Stop(Instance.FindSources(layer)); }
+    //public static void Stop(AudioSample sample) { Stop(Instance.FindSources(sample)); }
+    public static void Stop(AudioClip clip) { Stop(Instance.FindSources(clip)); }
    
     public static void Stop(List<AudioSourceContainer> sources) 
     { 
@@ -120,13 +116,13 @@ public class AudioManager :  MonoBehaviour
     /// </summary>
     private IEnumerator AddAudioSourceCR(AudioSourceContainer source)
     {
-        Main.AudioSources.Add(source);
+        Instance.AudioSources.Add(source);
         
         // Keep Running till it is destroyed
         while(!source.DestroyMe)
             yield return null;
 
-        Main.AudioSources.Remove(source);
+        Instance.AudioSources.Remove(source);
         source = null;
     }
 

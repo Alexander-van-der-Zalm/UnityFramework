@@ -7,18 +7,8 @@ using System.Collections.Generic;
 using System.IO;
 
 [CustomEditor(typeof(AudioLibrary))]
-public class AudioLibraryEditor : Editor 
+public class AudioLibraryEditor : EditorPlus 
 {
-    //[SerializeField]
-    //AudioLibraryEditorData data = new AudioLibraryEditorData();
-
-    //public void Awake()
-    //{
-    //    if (data == null)
-    //        data = ScriptableObject.CreateInstance<AudioLibraryEditorData>();
-    //    Debug.Log("Awake");
-    //}
-
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
@@ -129,12 +119,14 @@ public class AudioLibraryEditor : Editor
                 sample = new AudioSample();
 
             #region Clip, Layer, Delete, Settingsfold
-            
+
+            bool fold;
+
             Rect hor = EditorGUILayout.BeginHorizontal();
             {
                 //foldSettings[i] = EditorGUILayout.Foldout(foldSettings[i], "", settingsToggleStyle);
                 Rect rect = new Rect(hor.xMin, hor.yMin, 15, hor.height);
-                data.foldSettings[i] = EditorGUI.Foldout(rect, data.foldSettings[i], "", true);//, new GUIStyle() { alignment = TextAnchor.LowerRight });//,GUILayout.Width(200));
+                fold = SavedFoldout("", rect, i);//EditorGUI.Foldout(rect, data.foldSettings[i], "", true);
 
                 sample.Clip = EditorGUILayout.ObjectField("", sample.Clip, typeof(AudioClip), false, data.audioClipStyle) as AudioClip;
                 sample.Layer = (AudioLayer)EditorGUILayout.EnumPopup("", sample.Layer, data.audioLayerStyle);
@@ -150,7 +142,7 @@ public class AudioLibraryEditor : Editor
 
             #region Settings
 
-            if (data.foldSettings[i])
+            if (fold)
             {
                 EditorGUI.indentLevel++;
                 sample.Name = EditorGUILayout.TextField("Name:", sample.Name, GUILayout.Width(250));
@@ -214,17 +206,6 @@ public class AudioLibraryEditor : Editor
         }
 
         #endregion
-
-        //EditorUtility.SetDirty(data);
-        //UnityEditor.SerializedObject test = new SerializedObject(AudioLib);
-        //UnityEditor.SerializedProperty henk = new SerializedProperty();
-        //henk.p
-        //GUIContent content = new GUIContent("test","tooltip");
-        //EditorGUILayout.PropertyField(test, true);//content, true,GUILayout.Width(100));
-
-        
-
-        //Editor.DrawPropertiesExcluding(test);
     }
 
     private void RemoveSample(AudioLibraryEditorData data, AudioLibrary AudioLib, int removeAt)
@@ -244,10 +225,6 @@ public class AudioLibraryEditor : Editor
         sample.Clip = audioClip;
         AudioLib.Samples.Add(sample);
     }
-
-  
-
-    //public void OnCHanged OID
 
     public void OnInspectorUpdate()
     {
