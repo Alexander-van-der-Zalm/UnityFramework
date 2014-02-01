@@ -60,6 +60,12 @@ public class AudioManager : Singleton<AudioManager>
     // Transform based (3D Sound)
     // Point or Vector3 Based (3D Sound)
     // None (Directly to the main audio source (2D sound)
+    
+    
+    /// <summary>
+    /// Plays directly at the cameras audioSource
+    /// </summary>
+    /// <param name="sample"></param>
     public static void Play(AudioSample sample)
     {
 

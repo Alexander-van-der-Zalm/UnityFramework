@@ -7,8 +7,20 @@ using System.Collections.Generic;
 using System.IO;
 
 [CustomEditor(typeof(AudioLibrary))]
-public class AudioLibraryEditor : EditorPlus 
+public class AudioLibraryEditor : EditorPlus
 {
+    #region Fields
+
+    private GUILayoutOption[] audioClipStyle = new GUILayoutOption[] { GUILayout.MaxWidth(150), GUILayout.MinWidth(40) };
+    private GUILayoutOption[] audioLayerStyle = new GUILayoutOption[] { GUILayout.MaxWidth(70), GUILayout.MinWidth(40) };
+
+    private GUILayoutOption[] delButtonStyle = new GUILayoutOption[] { GUILayout.MaxWidth(30), GUILayout.MinWidth(10) };
+    private GUILayoutOption[] addButtonStyle = new GUILayoutOption[] { GUILayout.MaxWidth(50), GUILayout.MinWidth(30) };
+
+    private string audioLibraryFolderPath = "AudioLibraryFolderPath";
+
+    #endregion
+
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
@@ -17,26 +29,9 @@ public class AudioLibraryEditor : EditorPlus
 
         // Grab the object from the target in inspector
         AudioLibrary AudioLib = target as AudioLibrary;
-        AudioLibraryEditorData data = AudioLib.Data;
+//AudioLibraryEditorData data = AudioLib.Data;
         int samplesCount = AudioLib.Samples.Count;
 
-        #endregion
-
-        #region Check if settingsbools are null and the right size
-
-        //if (data.foldSettings == null)
-        //    data.foldSettings = new List<bool>(samplesCount);
-        //if (data._3DSettings == null)
-        //    data._3DSettings = new List<bool>(samplesCount);
-        //if (data._2DSettings == null)
-        //    data._2DSettings = new List<bool>(samplesCount);
-
-        while (data.foldSettings.Count < samplesCount)
-            data.foldSettings.Add(false);
-        while (data._3DSettings.Count < samplesCount)
-            data._3DSettings.Add(false);
-        while (data._2DSettings.Count < samplesCount)
-            data._2DSettings.Add(false);
         #endregion
 
         #region First part of the editorGui Count & Add
@@ -44,21 +39,31 @@ public class AudioLibraryEditor : EditorPlus
         EditorGUILayout.BeginHorizontal();
         {
             EditorGUILayout.LabelField("Samples in library: " + samplesCount);
-            if (GUILayout.Button("Add", data.addButtonStyle))
+            if (GUILayout.Button("Add", addButtonStyle))
             {
-                AddClipToList(data, AudioLib, null);
+                AddClipToList(AudioLib, null);
             }
         } EditorGUILayout.EndHorizontal();
 
+        string folderPath;
         EditorGUILayout.BeginHorizontal();
         {
+            // Check if there is already an dirpath in the editorPrefs
+            folderPath = EditorPrefs.GetString(audioLibraryFolderPath, "");
+            
+            // If the button is pressed, find a new folder
             if (GUILayout.Button("Folder"))
-                data.folderPath = EditorUtility.OpenFolderPanel("Select AudioFiles Folder", data.folderPath, "");
+                folderPath = EditorUtility.OpenFolderPanel("Select AudioFiles Folder", folderPath, "");
 
+            // Show the directory in a user friendly manner
             string dir = "";
-            if (data.folderPath != "")
-                dir = FileUtility.AssetsRelativePath(data.folderPath);
+            if (folderPath != "")
+                dir = FileUtility.AssetsRelativePath(folderPath);
             EditorGUILayout.LabelField("Dir: " + dir);
+            
+            // Save the changed string to the EditorPreference file
+            if(GUI.changed)
+                EditorPrefs.SetString(audioLibraryFolderPath, folderPath);
 
         } EditorGUILayout.EndHorizontal();
 
@@ -68,7 +73,7 @@ public class AudioLibraryEditor : EditorPlus
 
             if (GUILayout.Button("AddFromDirectory"))
             {
-                DirectoryInfo dir = new DirectoryInfo(data.folderPath);
+                DirectoryInfo dir = new DirectoryInfo(folderPath);
                 FileInfo[] allFiles = dir.GetFiles(); //FileUtility.GetResourcesDirectories();//data.folderPath);
                 Debug.Log(allFiles.Length);
                 //
@@ -76,6 +81,7 @@ public class AudioLibraryEditor : EditorPlus
                 {
                     if (f.FullName.EndsWith(".wav") || f.FullName.EndsWith(".ogg"))
                     {
+                        // Does not work
                         Debug.Log(f.FullName);
 
                         WWW www = new WWW(f.FullName);
@@ -84,7 +90,7 @@ public class AudioLibraryEditor : EditorPlus
                         string[] split = f.FullName.Split('/');
                         clip.name = split[split.Length - 1];
                         if (AudioLib.Samples.Where(a => a.Clip == clip).Count() == 0)
-                            AddClipToList(data, AudioLib, clip);
+                            AddClipToList(AudioLib, clip);
                         //clip
                     }
                 }
@@ -99,7 +105,7 @@ public class AudioLibraryEditor : EditorPlus
         {
             for (int i = samplesCount - 1; i >= 0; i--)
             {
-                RemoveSample(data, AudioLib, i);
+                RemoveSample(AudioLib, i);
             }
             samplesCount = AudioLib.Samples.Count();
         }
@@ -124,15 +130,14 @@ public class AudioLibraryEditor : EditorPlus
 
             Rect hor = EditorGUILayout.BeginHorizontal();
             {
-                //foldSettings[i] = EditorGUILayout.Foldout(foldSettings[i], "", settingsToggleStyle);
                 Rect rect = new Rect(hor.xMin, hor.yMin, 15, hor.height);
-                fold = SavedFoldout("", rect, i);//EditorGUI.Foldout(rect, data.foldSettings[i], "", true);
+                fold = SavedFoldout("", rect, i,"base");
 
-                sample.Clip = EditorGUILayout.ObjectField("", sample.Clip, typeof(AudioClip), false, data.audioClipStyle) as AudioClip;
-                sample.Layer = (AudioLayer)EditorGUILayout.EnumPopup("", sample.Layer, data.audioLayerStyle);
+                sample.Clip = EditorGUILayout.ObjectField("", sample.Clip, typeof(AudioClip), false, audioClipStyle) as AudioClip;
+                sample.Layer = (AudioLayer)EditorGUILayout.EnumPopup("", sample.Layer, audioLayerStyle);
                 
                 // Delete button
-                if (GUILayout.Button("X", data.delButtonStyle))
+                if (GUILayout.Button("X", delButtonStyle))
                     if (EditorUtility.DisplayDialog("Delete AudioSample", "Are you sure you want to delete this audioSample?", "ok", "cancel"))
                         removeAt = i;        
             }
@@ -162,8 +167,7 @@ public class AudioLibraryEditor : EditorPlus
                 sample.Settings.BypassReverbZones = EditorGUILayout.Toggle("BypassReverbZones:",sample.Settings.BypassReverbZones);
 
                 // 3D Sound Settings
-                data._3DSettings[i] = EditorGUILayout.Foldout(data._3DSettings[i], "3D Settings");
-                if (data._3DSettings[i])
+                if (SavedFoldout("3D Settings",i,"3D"))
                 {
                     EditorGUI.indentLevel++;
                     //[RangeAttribute(0, 5)]
@@ -177,8 +181,8 @@ public class AudioLibraryEditor : EditorPlus
                 }
 
                  // 2D Sound Settings
-                data._2DSettings[i] = EditorGUILayout.Foldout(data._2DSettings[i], "2D Settings");
-                if (data._2DSettings[i])
+                //data._2DSettings[i] = EditorGUILayout.Foldout(data._2DSettings[i], "2D Settings");
+                if (SavedFoldout("2D Settings",i,"2D"))
                 {
                     EditorGUI.indentLevel++;
                     //[RangeAttribute(-1, 1)]
@@ -202,25 +206,28 @@ public class AudioLibraryEditor : EditorPlus
         // Do the deletion outside of the loop
         if (removeAt >= 0)
         {
-            RemoveSample(data, AudioLib, removeAt);
+            RemoveSample(AudioLib, removeAt);
         }
 
         #endregion
     }
 
-    private void RemoveSample(AudioLibraryEditorData data, AudioLibrary AudioLib, int removeAt)
+    private void RemoveSample(AudioLibrary AudioLib, int removeAt)
     {
-        data.foldSettings.RemoveAt(removeAt);
-        data._3DSettings.RemoveAt(removeAt);
-        data._2DSettings.RemoveAt(removeAt);
+        //data.foldSettings.RemoveAt(removeAt);
+        //data._3DSettings.RemoveAt(removeAt);
+        //data._2DSettings.RemoveAt(removeAt);
         AudioLib.Samples.RemoveAt(removeAt);
+        RemoveSavedFoldout("2D", removeAt);
+        RemoveSavedFoldout("3D", removeAt);
+        RemoveSavedFoldout("base", removeAt);
     }
 
-    private void AddClipToList(AudioLibraryEditorData data, AudioLibrary AudioLib, AudioClip audioClip)
+    private void AddClipToList(AudioLibrary AudioLib, AudioClip audioClip)
     {
-        data.foldSettings.Add(false);
-        data._3DSettings.Add(false);
-        data._2DSettings.Add(false);
+        //data.foldSettings.Add(false);
+        //data._3DSettings.Add(false);
+        //data._2DSettings.Add(false);
         AudioSample sample = new AudioSample();
         sample.Clip = audioClip;
         AudioLib.Samples.Add(sample);

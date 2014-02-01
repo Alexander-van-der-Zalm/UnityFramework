@@ -15,7 +15,7 @@ public enum AudioLayer
 }
 
 [ExecuteInEditMode]
-public class AudioLayerManager : MonoBehaviour 
+public class AudioLayerManager : Singleton<AudioLayerManager> 
 {
     public List<AudioLayerSettings> AudioLayerSettings= new List<AudioLayerSettings>();
     //public List<bool> foldSettings
@@ -25,7 +25,6 @@ public class AudioLayerManager : MonoBehaviour
         IEnumerable<AudioLayer> values = Enum.GetValues(typeof(AudioLayer)).Cast<AudioLayer>();
         if (AudioLayerSettings.Count < values.Count())
         {
-            //AudioLayerSettings = new List<AudioLayerSettings>();
             foreach(AudioLayer audioLayer in values)
                 AudioLayerSettings.Add(new AudioLayerSettings(audioLayer));
         }
