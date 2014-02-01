@@ -24,7 +24,7 @@ public class EditorPlus : Editor
     /// <summary>
     /// Uses EditorPrefs to save and load fold boolean data
     /// </summary>
-    internal bool SavedFoldout(string name, int index = 0, string uniqueID = "")
+    internal bool SavedFoldout(string name, int index = -1, string uniqueID = "")
     {
         return SavedFoldout(new GUIContent(name, ""), index, uniqueID);
     }

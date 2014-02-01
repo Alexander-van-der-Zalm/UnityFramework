@@ -9,13 +9,15 @@ public class AudioLayerSettings
 
     [SerializeField]
     private AudioLayer layer;
-    
+
     [RangeAttribute(0, 1)]
     public float Volume = 1;
 
     public bool Mute = false;
 
     public int MaxClips = -1;
+
+    public int ClipsPlaying = 0;
 
     public AudioLayerSettings(AudioLayer layer)
     {

@@ -15,22 +15,26 @@ public enum AudioLayer
 }
 
 [ExecuteInEditMode]
+[Serializable]
 public class AudioLayerManager : Singleton<AudioLayerManager> 
 {
-    public List<AudioLayerSettings> AudioLayerSettings= new List<AudioLayerSettings>();
-    //public List<bool> foldSettings
+    [SerializeField]
+    private List<AudioLayerSettings> audioLayerSettings= new List<AudioLayerSettings>();
 
-    public void Update()
+    public void Start()
     {
+        // Possibly buggy
+        // Instantiates the list based on the enum
         IEnumerable<AudioLayer> values = Enum.GetValues(typeof(AudioLayer)).Cast<AudioLayer>();
-        if (AudioLayerSettings.Count < values.Count())
+        if (audioLayerSettings.Count < values.Count())
         {
             foreach(AudioLayer audioLayer in values)
-                AudioLayerSettings.Add(new AudioLayerSettings(audioLayer));
+                audioLayerSettings.Add(new AudioLayerSettings(audioLayer));
         }
     }
 
-    // Layers GUI
-    // Fill & Store all the LayerSettings from enum
-    
+    public static AudioLayerSettings GetAudioLayerSettings(AudioLayer layer)
+    {
+        return Instance.audioLayerSettings.Where(a => a.Layer == layer).First();
+    }
 }

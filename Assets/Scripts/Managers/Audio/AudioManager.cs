@@ -68,18 +68,69 @@ public class AudioManager : Singleton<AudioManager>
     /// <param name="sample"></param>
     public static void Play(AudioSample sample)
     {
-
+        // There should only be one audioListener
+        Transform audioListenerTransform = GameObject.FindObjectOfType<AudioListener>().transform;
+        Play(sample, audioListenerTransform);
     }
 
     public static void Play(AudioSample sample, Transform transform)
     {
         AudioSourceContainer container = new AudioSourceContainer();
 
+        // Durp @ container durp
+        GameObject soundObject = createAudioSourceGameObject(sample);
+        soundObject.transform.parent = transform;
     }
 
     public static void Play(AudioClip clip) 
     { 
 
+    }
+
+    private static GameObject createAudioSourceGameObject(AudioSample sample)
+    {
+        GameObject soundObject = createAudioSourceGameObject();
+
+        AudioSource source = soundObject.GetComponent<AudioSource>();
+        setSettingsOnAudioSource(sample, source);
+
+        return soundObject;
+    }
+
+    private static GameObject createAudioSourceGameObject()
+    {
+        GameObject soundObject = new GameObject();
+        soundObject.name = "AudioSourceObject";
+        soundObject.AddComponent<AudioSource>();
+
+
+        return soundObject;
+    }
+
+    private static AudioSource setSettingsOnAudioSource(AudioSample sample, AudioSource source)
+    {
+        AudioLayerSettings layer = AudioLayerManager.GetAudioLayerSettings(sample.Layer);
+        
+        source.volume = sample.Settings.Volume * layer.Volume;
+        source.mute = layer.Mute;
+        source.loop = sample.Settings.Loop;
+        source.priority = sample.Settings.Priority;
+        source.pitch = sample.Settings.Pitch;
+        
+        source.bypassEffects = sample.Settings.BypassEffects;
+        source.bypassListenerEffects = sample.Settings.BypassListenerEffects;
+        source.bypassReverbZones = sample.Settings.BypassReverbZones;
+
+        source.dopplerLevel = sample.Settings.DopplerLevel;
+        source.panLevel = sample.Settings.PanLevel;
+        source.spread = sample.Settings.Spread;
+        source.maxDistance = sample.Settings.MaxDistance;
+
+        source.pan = sample.Settings.Pan2D;
+
+        source.clip = sample.Clip;
+
+        return source;
     }
 
     #endregion
@@ -104,6 +155,7 @@ public class AudioManager : Singleton<AudioManager>
     public static void Resume() { }
     public static void Seek() { }
     public static void Transition() { }
+    public static void ChangeVolume() { }
     public static void Lerp(AudioSample clip1, AudioSample clip2, float t) { }
 
     //private 
