@@ -6,3 +6,10 @@
 *.csproj
 *.unityproj
 *.sln
+*.suo
+*.userprefs
+
+# OS X only (not needed on other platforms)
+.DS_Store
+*.swp
+*.Trashes
