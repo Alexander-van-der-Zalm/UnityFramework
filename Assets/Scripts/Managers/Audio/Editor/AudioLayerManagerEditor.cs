@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -14,13 +15,13 @@ public class AudioLayerManagerEditor : EditorPlus
         AudioLayerManager manager = target as AudioLayerManager;
         SerializedObject soManager = new SerializedObject(manager);
         
-        int count = manager.AudioLayerSettings.Count;
+        int count = manager.audioLayerSettings.Count;
 
         if(SavedFoldout("Description"))
             EditorGUILayout.TextArea(description);
         for (int i = 0; i < count; i++)
         {
-            AudioLayerSettings settings = manager.AudioLayerSettings[i]; 
+            AudioLayerSettings settings = manager.audioLayerSettings[i]; 
             GUIContent name = new GUIContent("AudioLayer: " + settings.Layer.ToString(), settingsNameTooltip);
 
             if (SavedFoldout(name, i))

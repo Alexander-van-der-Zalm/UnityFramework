@@ -3,17 +3,28 @@ using System.Collections;
 using System;
 
 [Serializable]
-public class AudioSourceContainer // : MonoBehaviour
+public class AudioSourceContainer  : MonoBehaviour
 {
     #region Fields
 
-    public string Name{get;set;}
+    public string Name;
+    
     [HideInInspector]
     public bool DestroyMe = false;
 
-    public AudioSource AudioSource { get; set; }
-    
-    public AudioLayer Layer { get; set; }
+    // Changed = new volume
+    public AudioSource AudioSource { get { return audioSource; } private set { audioSource = value; } } 
+    [SerializeField]
+    private AudioSource audioSource;
+
+    // Changed = new volume
+    public AudioLayer Layer;
+    //[SerializeField]
+    //private 
+
+    private AudioLayerSettings layerSettings { get { return AudioLayerManager.GetAudioLayerSettings(Layer); } }
+
+    // Changed = new volume
     [RangeAttribute(0, 1)]
     public float VolumeModifier = 1;
 
@@ -56,6 +67,11 @@ public class AudioSourceContainer // : MonoBehaviour
     }
 
     #endregion
+
+    public void UpdateVolume()
+    {
+        AudioSource.volume = VolumeModifier * layerSettings.Volume;
+    }
 
     public void Destroy()
     {

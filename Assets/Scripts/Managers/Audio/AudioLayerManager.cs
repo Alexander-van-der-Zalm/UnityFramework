@@ -19,7 +19,7 @@ public enum AudioLayer
 public class AudioLayerManager : Singleton<AudioLayerManager> 
 {
     [SerializeField]
-    private List<AudioLayerSettings> audioLayerSettings= new List<AudioLayerSettings>();
+    public List<AudioLayerSettings> audioLayerSettings= new List<AudioLayerSettings>();
 
     public void Start()
     {

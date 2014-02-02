@@ -101,7 +101,7 @@ public class AudioManager : Singleton<AudioManager>
     {
         GameObject soundObject = new GameObject();
         soundObject.name = "AudioSourceObject";
-        soundObject.AddComponent<AudioSource>();
+        soundObject.AddComponent<AudioSourceContainer>();
 
 
         return soundObject;
