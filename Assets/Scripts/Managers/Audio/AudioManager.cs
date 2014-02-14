@@ -68,70 +68,41 @@ public class AudioManager : Singleton<AudioManager>
     /// <param name="sample"></param>
     public static void Play(AudioSample sample)
     {
-        // There should only be one audioListener
+        // There should only be one audioListener (Usually main camera)
         Transform audioListenerTransform = GameObject.FindObjectOfType<AudioListener>().transform;
         Play(sample, audioListenerTransform);
     }
 
+    /// <summary>
+    /// Parents to the transform (hence follows it)
+    /// </summary>
+    /// <param name="sample"></param>
+    /// <param name="transform"></param>
     public static void Play(AudioSample sample, Transform transform)
     {
-        AudioSourceContainer container = new AudioSourceContainer();
-
-        // Durp @ container durp
-        GameObject soundObject = createAudioSourceGameObject(sample);
+        GameObject soundObject = RegisterAndCreateAudioSourceContainer(sample);
         soundObject.transform.parent = transform;
     }
 
-    public static void Play(AudioClip clip) 
-    { 
-
-    }
-
-    private static GameObject createAudioSourceGameObject(AudioSample sample)
+    public static void Play(AudioSample sample, Vector3 position)
     {
-        GameObject soundObject = createAudioSourceGameObject();
-
-        AudioSource source = soundObject.GetComponent<AudioSource>();
-        setSettingsOnAudioSource(sample, source);
-
-        return soundObject;
+        GameObject soundObject = RegisterAndCreateAudioSourceContainer(sample);
+        soundObject.transform.position = position;
     }
 
-    private static GameObject createAudioSourceGameObject()
+    public static void Play(AudioClip clip, AudioLayer layer = AudioLayer.None, AudioSample.AudioSettings settings = null) 
     {
-        GameObject soundObject = new GameObject();
-        soundObject.name = "AudioSourceObject";
-        soundObject.AddComponent<AudioSourceContainer>();
+        AudioSample sample = new AudioSample();
+        sample.Clip = clip;
+        sample.Layer = layer;
+        sample.Settings = settings;
 
-
-        return soundObject;
+        // There should only be one audioListener (Usually main camera)
+        Transform audioListenerTransform = GameObject.FindObjectOfType<AudioListener>().transform;
+        Play(sample, audioListenerTransform);
     }
 
-    private static AudioSource setSettingsOnAudioSource(AudioSample sample, AudioSource source)
-    {
-        AudioLayerSettings layer = AudioLayerManager.GetAudioLayerSettings(sample.Layer);
-        
-        source.volume = sample.Settings.Volume * layer.Volume;
-        source.mute = layer.Mute;
-        source.loop = sample.Settings.Loop;
-        source.priority = sample.Settings.Priority;
-        source.pitch = sample.Settings.Pitch;
-        
-        source.bypassEffects = sample.Settings.BypassEffects;
-        source.bypassListenerEffects = sample.Settings.BypassListenerEffects;
-        source.bypassReverbZones = sample.Settings.BypassReverbZones;
-
-        source.dopplerLevel = sample.Settings.DopplerLevel;
-        source.panLevel = sample.Settings.PanLevel;
-        source.spread = sample.Settings.Spread;
-        source.maxDistance = sample.Settings.MaxDistance;
-
-        source.pan = sample.Settings.Pan2D;
-
-        source.clip = sample.Clip;
-
-        return source;
-    }
+   
 
     #endregion
 
@@ -164,8 +135,17 @@ public class AudioManager : Singleton<AudioManager>
 
     #region Add
 
+    private static GameObject RegisterAndCreateAudioSourceContainer(AudioSample sample)
+    {
+        GameObject soundObject = AudioSourceContainer.CreateContainer(sample);
+        //Register
+        return soundObject;
+    }
+
     private void AddAudioSource(AudioSourceContainer source)
     {
+        // Handle destroy
+        // Handle limit
         StartCoroutine(AddAudioSourceCR(source));
     }
 

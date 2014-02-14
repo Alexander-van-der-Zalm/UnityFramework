@@ -19,36 +19,39 @@ public class AudioSourceContainer  : MonoBehaviour
 
     // Changed = new volume
     public AudioLayer Layer;
-    //[SerializeField]
-    //private 
-
     private AudioLayerSettings layerSettings { get { return AudioLayerManager.GetAudioLayerSettings(Layer); } }
 
     // Changed = new volume
+    public float VolumeModifier { get { return volumeModifier; } set { volumeModifier = value; UpdateVolume(); } }
     [RangeAttribute(0, 1)]
-    public float VolumeModifier = 1;
+    private float volumeModifier = 1;
 
     #endregion
 
     #region Constructors
 
-    public AudioSourceContainer()
+    public static GameObject CreateContainer(AudioSample sample)
     {
+        GameObject soundObject = new GameObject();
+        soundObject.name = "AudioSourceObject";
+        AudioSourceContainer container = soundObject.AddComponent<AudioSourceContainer>();
+        
+        container.SetSettingsFromSample(sample);
 
+        return soundObject;
     }
 
-    public AudioSourceContainer(AudioSample sample)
-    {
-        SetSettingsFromSample(sample);
-    }
-
-    public void SetSettingsFromSample(AudioSample sample)
+    private void SetSettingsFromSample(AudioSample sample)
     {
         if (AudioSource == null)
             throw new Exception("AudioSourceContainer: No AudioSource set");
-        
+
+        Layer = sample.Layer;
+        AudioLayerSettings layerS = layerSettings;
+
         VolumeModifier              = sample.Settings.Volume;
 
+        AudioSource.mute            = layerS.Mute;
         AudioSource.loop            = sample.Settings.Loop;
         AudioSource.priority        = sample.Settings.Priority;
         AudioSource.pitch           = sample.Settings.Pitch;
@@ -63,7 +66,8 @@ public class AudioSourceContainer  : MonoBehaviour
         AudioSource.maxDistance     = sample.Settings.MaxDistance;
 
         AudioSource.pan             = sample.Settings.Pan2D;
-        
+
+        AudioSource.clip            = sample.Clip;
     }
 
     #endregion
