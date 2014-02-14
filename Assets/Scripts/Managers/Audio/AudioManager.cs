@@ -18,6 +18,11 @@ public class AudioManager : Singleton<AudioManager>
     // - ETC.
     public List<AudioSourceContainer> AudioSources { get; private set; }
     
+    public AudioLayerManager AudioLayerManager;
+    public AudioLibrary AudioLibrary;
+
+
+
     #endregion
 
     #region Instantiate
@@ -82,12 +87,17 @@ public class AudioManager : Singleton<AudioManager>
     {
         GameObject soundObject = RegisterAndCreateAudioSourceContainer(sample);
         soundObject.transform.parent = transform;
+        soundObject.transform.position = transform.position;
+
+        Play(soundObject);
     }
 
     public static void Play(AudioSample sample, Vector3 position)
     {
         GameObject soundObject = RegisterAndCreateAudioSourceContainer(sample);
         soundObject.transform.position = position;
+        
+        Play(soundObject);
     }
 
     public static void Play(AudioClip clip, AudioLayer layer = AudioLayer.None, AudioSample.AudioSettings settings = null) 
@@ -102,6 +112,11 @@ public class AudioManager : Singleton<AudioManager>
         Play(sample, audioListenerTransform);
     }
 
+    private static void Play(GameObject go)
+    {
+        AudioSource audioSource = go.GetComponent<AudioSource>();
+        audioSource.Play();
+    }
    
 
     #endregion
