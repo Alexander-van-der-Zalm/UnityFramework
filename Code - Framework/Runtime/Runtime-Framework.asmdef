@@ -1,0 +1,11 @@
+{
+    "name": "Framework",
+    "references": [
+        "Unity.TextMeshPro",
+        "Cinemachine"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

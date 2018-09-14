@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71ce7640105edb142aca471a7d6129a7, type: 3}
+  m_Name: InputExampleTest
+  m_EditorClassIdentifier: 
+  PlayerIndex: 0
+  Horizontal:
+    Name: 
+    AxisKeys:
+    - Type: 0
+      keys:
+      - A
+      - D
+    - Type: 0
+      keys:
+      - LeftArrow
+      - RightArrow
+    - Type: 2
+      keys:
+      - LeftX
+      - 
+    - Type: 1
+      keys:
+      - Left
+      - Right
+    lastAxis: 0
+    lastInputType: 0
+    xbox: 0
+  Vertical:
+    Name: 
+    AxisKeys:
+    - Type: 0
+      keys:
+      - S
+      - W
+    - Type: 0
+      keys:
+      - DownArrow
+      - UpArrow
+    - Type: 2
+      keys:
+      - LeftY
+      - 
+    - Type: 1
+      keys:
+      - Down
+      - Up
+    lastAxis: 0
+    lastInputType: 0
+    xbox: 0
+  Jump:
+    Name: 
+    Keys:
+    - Type: 0
+      KeyValue: Space
+    - Type: 1
+      KeyValue: A
+    m_LastInputType: 0
+    m_XboxPlayer: 0

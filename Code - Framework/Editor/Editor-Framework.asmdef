@@ -1,0 +1,12 @@
+{
+    "name": "ControlEditor",
+    "references": [
+        "Framework"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

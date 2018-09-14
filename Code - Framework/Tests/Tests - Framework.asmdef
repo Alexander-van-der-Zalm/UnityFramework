@@ -1,0 +1,14 @@
+{
+    "name": "Tests-Framework",
+    "references": [
+        "Framework"
+    ],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}
